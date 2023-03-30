@@ -1,7 +1,6 @@
 import torch
-from PIL import Image
 import numpy as np
-from Albumentations as A
+import albumentations as A
 from torch.utils.data import Dataset, DataLoader
 from os.path import join
 import pandas as pd
@@ -75,17 +74,17 @@ def get_transforms(img_sz,fliph=True,flipv=True,rotate90=True,HSV=True,blur=True
     transforms.append(A.Normalize())
     transforms.append(ToTensorV2)
     data_transforms = {'train': A.Compose(transforms),
-        'val': A.Compose([A.CLAHE((2,2),p=1),A.Resize(img_size,img_size),A.Normalize(),ToTensorV2(),])}
+        'val': A.Compose([A.CLAHE((2,2),p=1),A.Resize(img_sz,img_sz),A.Normalize(),ToTensorV2(),])}
     return data_transforms
     
 def preprocess(img_pth,img_sz):
     test_transform=get_transforms(img_sz)['val']
     img=cv2.imread(img_pth)
     img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img=np.expand_dims(img,axis=0)
     img_preprocessed=test_transform(image=img)['image']
+    img_preprocessed=torch.unsqueeze(img_preprocessed,0)
     return img_preprocessed
 def seed_all():
-    torch.manual_seed(42)
-    random.seed(55)
-    np.random.seed(102)
+    torch.manual_seed(77)
+    random.seed(77)
+    np.random.seed(77)
