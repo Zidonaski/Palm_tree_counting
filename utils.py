@@ -3,10 +3,11 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from os.path import join
 import pandas as pd
-from img_utils import *
 import cv2
 import random
-
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+IMG_SZ=416
 class TreeCountingDataset(Dataset):
   def __init__(self, imgdir ,csv_data,transform=None,dataset_type="train"):
         self.imgdir=imgdir
@@ -54,6 +55,27 @@ def get_test_data(imgdir,csv_files_pth,batch_size,transforms=None):
     test_dataloader=DataLoader(test_dataset, batch_size=batch_size,shuffle=True,drop_last=True)
     return test_dataset,test_dataloader
 
+def get_transforms(img_sz=IMG_SZ,fliph=True,flipv=True,rotate90=True,HSV=True,blur=True,CLAHE=True):
+    transforms=[]
+    if CLAHE:
+        transforms.append(A.CLAHE((2,2),p=1))
+    if fliph:
+        transforms.append(A.HorizontalFlip(p=0.5))
+    if flipv:
+        transforms.append(A.VerticalFlip(p=0.5))
+    if rotate90:
+        transforms.append(A.RandomRotate90(p=0.5))
+    if HSV:
+        transforms.append(A.HueSaturationValue(p=0.5))
+    if blur:
+        transforms.append(A.GaussianBlur(p=0.5))
+
+    transforms.append(A.Resize(img_sz,img_sz))
+    transforms.append(A.Normalize())
+    transforms.append(ToTensorV2)
+    data_transforms = {'train': A.Compose(transforms),
+        'val': A.Compose([A.CLAHE((2,2),p=1),A.Resize(img_sz,img_sz),A.Normalize(),ToTensorV2()])}
+    return data_transforms
 def seed_all():
     torch.manual_seed(77)
     random.seed(77)

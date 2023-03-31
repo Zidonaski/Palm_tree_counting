@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from dataset_utils import *
+from utils import *
 from model import CNN
 
 
