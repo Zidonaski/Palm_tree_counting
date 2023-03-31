@@ -3,7 +3,7 @@ from torch import nn
 import argparse
 from model import CNN
 import numpy as np
-from utils import get_test_data, get_transforms
+from dataset_utils import get_test_data, get_transforms
 
 def test(testloader, model):
     cuda=torch.cuda.is_available()
