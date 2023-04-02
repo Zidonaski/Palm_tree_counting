@@ -22,6 +22,6 @@ def predict():
 if __name__=="__main__":
     ort_sess = ort.InferenceSession('./static/models/best_model.onnx')
     img_sz=ort_sess.get_inputs()[0].shape[-1]
-    app.run(debug=False,port=5000)
+    app.run(debug=False,host="0.0.0.0",port=8000)
     
     
